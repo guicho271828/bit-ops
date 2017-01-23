@@ -1,0 +1,23 @@
+#!/bin/sh
+#|-*- mode:lisp -*-|#
+#|
+exec ros -Q -- $0 "$@"
+|#
+
+(ql:quickload :fiveam)
+
+(defun main (&rest argv)
+  (declare (ignorable argv))
+  (uiop:quit (if (handler-case
+                     (progn
+                       (asdf:load-system :bit-ops.test)
+                       (eval
+ (read-from-string
+  "(let ((res (5am:run :bit-ops)))
+     (explain! res)
+     (every #'fiveam::TEST-PASSED-P res))"))
+)
+                   (serious-condition (c)
+                     (describe c)
+                     (uiop:quit 2)))
+                 0 1)))
