@@ -84,55 +84,54 @@ into (bit-not subform <temporary storage>) .
 
 (defvar *ops* nil)
 (defvar *first-variable* nil)
+(defvar *result-variable* nil)
 (defun compile-bitwise-operations (form)
   (let ((*ops* nil)
         (*first-variable* nil))
-    (let ((result-symbol (parse-form form)))
+    (let ((*result-variable* (parse-form form)))
       (setf *ops* (nreverse *ops*))     ;in order
       (when *register-allocation-optimization*
         (reduce-allocation))
-      (build-forms result-symbol))))
+      (build-forms))))
 
 (defun reduce-allocation ()
-  (tagbody
-    :start
-    (print *ops*)
-    (iter (for op1 in *ops*)
-          (ematch op1
-            ((op :name n1 :inputs i1 :output o1)
-             (let ((successors
-                    (iter (for op2 in *ops*)
-                          (when (and (member o1 (op-inputs op2))
-                                     (not (eq o1 (op-output op2)))
-                                     (not (member (op-output op2) (op-inputs op2))))
-                            (collect op2)))))
-               (match successors
-                 ((list (and op2 (op :name n2 :inputs i2 :output o2)))
-                  ;; only 1 op depends on op; share storage
-                  (print `(:removing ,o1))
-                  (setf *ops* (substitute (op n1 i1 o2) op1 *ops*))
-                  (setf *ops* (substitute (op n2 (substitute o2 o1 i2) o2)
-                                          op2 *ops*))
-                  (go :start))))))
-          (finally
-           (return-from reduce-allocation)))))
+  (iter (for op1 in *ops*)
+        (print *ops*)
+        (ematch op1
+          ((op :inputs (place i1) :output (place o1))
+           (let ((successors
+                  (iter (for op2 in *ops*)
+                        (when (member o1 (op-inputs op2))
+                          (collect op2)))))
+             (match successors
+               ((list (op :inputs (place i2) :output (place o2 o2-orig)))
+                ;; only 1 op depends on op; share storage
+                (unless (member o2 i2) ; check if already reduced
+                  (print `(:removing ,o2))
+                  (setf o2 o1)
+                  (iter (for op3 in *ops*)
+                        (ematch op3
+                          ((op :inputs (place i3))
+                           (setf i3 (substitute o1 o2-orig i3)))))
+                  (when (eq *result-variable* o2-orig)
+                    (setf *result-variable* o1))))))))))
 
-(defun build-forms (result-symbol)
+(defun build-forms ()
   (with-gensyms (len)
     `(let* ((,len (length ,*first-variable*))
-            (,result-symbol (make-bit-vector ,len)))
+            (,*result-variable* (make-bit-vector ,len)))
        (dlet* ((+zero+ (make-bit-vector ,len))
                (+one+  (make-bit-vector ,len))
                ,@(mapcar (lambda (out)
                            `(,out (make-bit-vector ,len)))
                          (remove-duplicates
-                          (remove result-symbol
+                          (remove *result-variable*
                                   (mapcar #'op-output *ops*)))))
          (declare (ignorable +zero+ +one+))
          ,@(mapcar (lambda-ematch
                      ((op name inputs output)
                       `(,name ,@inputs ,output))) *ops*)
-         ,result-symbol))))
+         ,*result-variable*))))
 
 (defun-match* common-subexpression (op1 op2)
   (((op name inputs)
@@ -193,7 +192,7 @@ into (bit-not subform <temporary storage>) .
 
 #+nil
 (as-bitwise-operations ()
-  (and (and a b)
+  (ior (and a b)
        (and a b)
        c))
 
