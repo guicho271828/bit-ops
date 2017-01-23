@@ -31,6 +31,16 @@
 (defun make-bit-vector (length)
   (make-array length :element-type 'bit))
 
+(declaim (inline make-zero))
+(ftype make-zero unsigned-byte simple-bit-vector)
+(defun make-zero (length)
+  (make-array length :element-type 'bit :initial-element 0))
+
+(declaim (inline make-one))
+(ftype make-one unsigned-byte simple-bit-vector)
+(defun make-one (length)
+  (make-array length :element-type 'bit :initial-element 1))
+
 
 ;;; define macro bitwise operation.
 
@@ -120,8 +130,8 @@ into (bit-not subform <temporary storage>) .
   (with-gensyms (len)
     `(let* ((,len (length ,*first-variable*))
             (,*result-variable* ,(or result `(make-bit-vector ,len))))
-       (dlet* ((+zero+ (make-bit-vector ,len))
-               (+one+  (make-bit-vector ,len))
+       (dlet* ((+zero+ (make-zero ,len))
+               (+one+  (make-one  ,len))
                ,@(mapcar (lambda (out)
                            `(,out (make-bit-vector ,len)))
                          (remove-duplicates
