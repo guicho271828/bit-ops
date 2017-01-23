@@ -9,7 +9,13 @@
   (:export
    #:make-bit-vector
    #:dlet
-   #:dlet*)
+   #:dlet*
+   #:bit-if-then-else
+   #:bit-implies
+   #:implies
+   #:bitwise-operation
+   #:define-bitwise-operation
+   #:as-bitwise-operations)
   (:shadowing-import-from :immutable-struct :ftype))
 (in-package :bit-ops)
 
