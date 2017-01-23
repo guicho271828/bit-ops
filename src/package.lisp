@@ -85,14 +85,14 @@ into (bit-not subform <temporary storage>) .
 (defvar *ops* nil)
 (defvar *first-variable* nil)
 (defvar *result-variable* nil)
-(defun compile-bitwise-operations (form)
+(defun compile-bitwise-operations (form result)
   (let ((*ops* nil)
         (*first-variable* nil))
     (let ((*result-variable* (parse-form form)))
       (setf *ops* (nreverse *ops*))     ;in order
       (when *register-allocation-optimization*
         (reduce-allocation))
-      (build-forms))))
+      (build-forms result))))
 
 (defun reduce-allocation ()
   (iter (for op1 in *ops*)
@@ -116,10 +116,10 @@ into (bit-not subform <temporary storage>) .
                   (when (eq *result-variable* o2-orig)
                     (setf *result-variable* o1))))))))))
 
-(defun build-forms ()
+(defun build-forms (result)
   (with-gensyms (len)
     `(let* ((,len (length ,*first-variable*))
-            (,*result-variable* (make-bit-vector ,len)))
+            (,*result-variable* ,(or result `(make-bit-vector ,len))))
        (dlet* ((+zero+ (make-bit-vector ,len))
                (+one+  (make-bit-vector ,len))
                ,@(mapcar (lambda (out)
@@ -201,16 +201,7 @@ into (bit-not subform <temporary storage>) .
   (and (and a b)
        (and c d)))
 
-;; 
-;; ->
-;; (ftype fn simple-bit-vector simple-bit-vector simple-bit-vector simple-bit-vector)
-;; (defun fn (a b c)
-;;   (declare (optimize (speed 2) (safety 0)))
-;;   (dlet ((tmp (make-bit-vector (length a))))
-;;     (bit-and a b tmp)
-;;     (bit-and tmp c)))
-
-(defmacro as-bitwise-operations (() &body body)
+(defmacro as-bitwise-operations ((&key result) &body body)
   "Compute bitwise operations using bit vector arithmetic.
 BODY accepts a single form.
 
@@ -225,6 +216,7 @@ into (bit-not subform <temporary storage>) .
 
   not and andc1 andc2 eqv ior nand nor orc1 orc2 xor
 
+The computation result is stored in a newly allocated vector, or in RESULT if specified.
 "
   (assert (= (length body) 1))
-  (compile-bitwise-operations (first body)))
+  (compile-bitwise-operations (first body) result))
