@@ -8,5 +8,4 @@
 
 (define-bitwise-operation implies (lhs rhs)
   `(ior (not ,lhs)
-        rhs))
-
+        ,rhs))
