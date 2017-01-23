@@ -30,6 +30,7 @@
   :components ((:module "src"
                 :components
                 ((:file "package")
-                 (:file "macros"))))
+                 (:file "macros")
+                 (:file "functions"))))
   :description "Optimized bit-vector operations"
   :in-order-to ((test-op (test-op :bit-ops.test))))
