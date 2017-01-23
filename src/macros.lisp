@@ -25,3 +25,12 @@
         (half-adder-carry (half-adder-sum ,a ,b)
                           ,x)))
 
+#+nil
+(as-bitwise-operations ()
+  (full-adder-carry a b x))
+
+;; multi-digit adder...
+
+;; carry lookahead ...
+
+;; subtraction...
