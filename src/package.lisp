@@ -178,8 +178,8 @@ into (bit-not subform <temporary storage>) .
                            (parse-form `(,commutative-op ,@args))) (gensym))))
     ((list* (and macro-op (symbol)) args)
      (parse-form
-      (funcall (symbol-bitwise-operation macro-op)
-               args)))))
+      (apply (symbol-bitwise-operation macro-op)
+             args)))))
 
 
 #+nil
