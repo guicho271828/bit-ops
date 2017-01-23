@@ -1,6 +1,8 @@
 
 # Bit-Ops - Optimized bit-vector operations
 
+[![Build Status](https://travis-ci.org/guicho271828/bit-ops.svg?branch=master)](https://travis-ci.org/guicho271828/bit-ops)
+
 ## Usage
 
 ### Macro AS-BITWISE-OPERATIONS (&key result) &body body
