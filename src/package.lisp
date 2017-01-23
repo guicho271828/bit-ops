@@ -202,17 +202,19 @@ into (bit-not subform <temporary storage>) .
        (and c d)))
 
 (defmacro as-bitwise-operations ((&key result) &body body)
-  "Compute bitwise operations using bit vector arithmetic.
+  "
+Compute bitwise operations using bit vector arithmetic.
 BODY accepts a single form.
 
 The compiler handles various optimizations:
 
 * Nested expressions store the results into dynamic-extent temporary vectors.
 * Common subexpressions are eliminated.
+* The number of temporary vectors are minimized/shared in spirit similar to register allocation.
 * Macros for bitwise operations can be defined with DEFINE-BITWISE-OPERATION.
 
 Primitive operators corresponds to ANSI CL functions: For example, (not subform) is compiled
-into (bit-not subform <temporary storage>) .
+into (bit-not subform <temporary storage>) . Following operators are available:
 
   not and andc1 andc2 eqv ior nand nor orc1 orc2 xor
 
