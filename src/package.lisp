@@ -155,6 +155,12 @@ into (bit-not subform <temporary storage>) .
      (parse-form arg))
     ((list* (and commutative-op
                  (or 'and 'eqv 'ior 'nand 'nor 'xor))
+            (list* (eq commutative-op) sub-args)
+            args)
+     ;; commutative fusion
+     (parse-form `(,commutative-op ,@sub-args ,@args)))
+    ((list* (and commutative-op
+                 (or 'and 'eqv 'ior 'nand 'nor 'xor))
             arg args)
      (accumulate (op (symbolicate 'bit- commutative-op)
                      (list (parse-form arg)
