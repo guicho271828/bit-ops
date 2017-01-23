@@ -26,8 +26,10 @@
   :source-control (:git "https://github.com/guicho271828/bit-ops.git")
   :license "LLGPL"
   :depends-on (:iterate :alexandria :trivia :immutable-struct :lisp-namespace)
+  :serial t
   :components ((:module "src"
                 :components
-                ((:file "package"))))
+                ((:file "package")
+                 (:file "macros"))))
   :description "Optimized bit-vector operations"
   :in-order-to ((test-op (test-op :bit-ops.test))))
