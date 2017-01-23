@@ -3,6 +3,68 @@
 
 ## Usage
 
+### Macro AS-BITWISE-OPERATIONS (&key result) &body body
+
+Compute bitwise operations using bit vector arithmetic.
+BODY accepts a single form. Within BODY, one can use variables holding bit-vectors as arguments to
+bitwise operations, as well as constants 0 and 1, which maps to the bit vector filled with
+0 or 1, respectively.
+
+Primitive operators corresponds to ANSI CL functions: For example, (not subform) is compiled
+into (bit-not subform <temporary storage>) . Following operators are available:
+
+  not and andc1 andc2 eqv ior nand nor orc1 orc2 xor
+
+The final computation result is stored in a newly allocated vector, or in RESULT if specified,
+in spirit similar to the optional argument of Common Lisp bit-vector functions.
+The entire form returns the bit-vector which contains the result.
+
+The compiler does various optimizations:
+
+* Nested expressions store the results into dynamic-extent temporary vectors.
+* Common subexpressions are eliminated.
+* The number of temporary vectors are minimized/shared in spirit similar to register allocation.
+* Macros for bitwise operations can be defined with DEFINE-BITWISE-OPERATION.
+
+
+```lisp
+
+(as-bitwise-operations ()
+  (and a b c))
+
+->
+
+(LET* ((#:LEN835 (LENGTH C)) (#:G833 (MAKE-BIT-VECTOR #:LEN835)))
+  (LET* ((+ZERO+ (MAKE-ZERO #:LEN835))
+         (+ONE+ (MAKE-ONE #:LEN835)))
+    (DECLARE (DYNAMIC-EXTENT +ZERO+ +ONE+))
+    (DECLARE (IGNORABLE +ZERO+ +ONE+))
+    (BIT-AND B C #:G833)
+    (BIT-AND A #:G833 #:G833)
+    #:G833))
+
+
+
+(define-bitwise-operation if (condition then else)
+  `(ior (and ,condition ,then)
+        (andc1 ,condition ,else)))
+
+(as-bitwise-operations (:result r)
+  (if a b c))
+
+->
+
+(LET* ((#:LEN839 (LENGTH C)) (#:G836 R))
+  (LET* ((+ZERO+ (MAKE-ZERO #:LEN839))
+         (+ONE+ (MAKE-ONE #:LEN839))
+         (#:G837 (MAKE-BIT-VECTOR #:LEN839)))
+    (DECLARE (DYNAMIC-EXTENT +ZERO+ +ONE+ #:G837))
+    (DECLARE (IGNORABLE +ZERO+ +ONE+))
+    (BIT-AND A B #:G836)
+    (BIT-ANDC1 A C #:G837)
+    (BIT-IOR #:G836 #:G837 #:G836)
+    #:G836))
+```
 
 ## Dependencies
 This library is at least tested on implementation listed below:

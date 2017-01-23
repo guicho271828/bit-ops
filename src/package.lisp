@@ -214,21 +214,25 @@ into (bit-not subform <temporary storage>) .
 (defmacro as-bitwise-operations ((&key result) &body body)
   "
 Compute bitwise operations using bit vector arithmetic.
-BODY accepts a single form.
-
-The compiler handles various optimizations:
-
-* Nested expressions store the results into dynamic-extent temporary vectors.
-* Common subexpressions are eliminated.
-* The number of temporary vectors are minimized/shared in spirit similar to register allocation.
-* Macros for bitwise operations can be defined with DEFINE-BITWISE-OPERATION.
+BODY accepts a single form. Within BODY, one can use variables holding bit-vectors as arguments to
+bitwise operations, as well as constants 0 and 1, which maps to the bit vector filled with
+0 or 1, respectively.
 
 Primitive operators corresponds to ANSI CL functions: For example, (not subform) is compiled
 into (bit-not subform <temporary storage>) . Following operators are available:
 
   not and andc1 andc2 eqv ior nand nor orc1 orc2 xor
 
-The computation result is stored in a newly allocated vector, or in RESULT if specified.
+The final computation result is stored in a newly allocated vector, or in RESULT if specified,
+in spirit similar to the optional argument of Common Lisp bit-vector functions.
+The entire form returns the bit-vector which contains the result.
+
+The compiler does various optimizations:
+
+* Nested expressions store the results into dynamic-extent temporary vectors.
+* Common subexpressions are eliminated.
+* The number of temporary vectors are minimized/shared in spirit similar to register allocation.
+* Macros for bitwise operations can be defined with DEFINE-BITWISE-OPERATION.
 "
   (assert (= (length body) 1))
   (compile-bitwise-operations (first body) result))
