@@ -25,7 +25,7 @@
   :bug-tracker "https://github.com/guicho271828/bit-ops/issues"
   :source-control (:git "https://github.com/guicho271828/bit-ops.git")
   :license "LLGPL"
-  :depends-on (:iterate :alexandria :trivia)
+  :depends-on (:iterate :alexandria :trivia :immutable-struct)
   :components ((:module "src"
                 :components
                 ((:file "package"))))
