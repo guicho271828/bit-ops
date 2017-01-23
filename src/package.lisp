@@ -10,7 +10,7 @@
    #:make-bit-vector
    #:dlet
    #:dlet*)
-  (:shadowing-import-from :immutable-struct :ftype :defstruct))
+  (:shadowing-import-from :immutable-struct :ftype))
 (in-package :bit-ops)
 
 ;;; basic constructs.
@@ -77,6 +77,10 @@ into (bit-not subform <temporary storage>) .
   name
   inputs
   output)
+
+(declaim (inline op))
+(defun op (name inputs output)
+  (make-op :name name :inputs inputs :output output))
 
 (defvar *ops* nil)
 (defvar *first-variable* nil)
