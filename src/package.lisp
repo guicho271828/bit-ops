@@ -90,20 +90,28 @@ into (bit-not subform <temporary storage>) .
       (build-forms result-symbol))))
 
 (defun reduce-allocation ()
-  (iter (for op1 in *ops*)
-        (ematch op1
-          ((op :name n1 :inputs i1 :output o1)
-           (let ((successors
-                  (iter (for op2 in *ops*)
-                        (when (member o1 (op-inputs op2))
-                          (collect op2)))))
-             (match successors
-               ((list (and op2 (op :name n2 :inputs i2 :output o2)))
-                ;; only 1 op depends on op; share storage
-                (print `(:removing ,o1))
-                (setf *ops* (substitute (op n1 i1 o2) op1 *ops*))
-                (setf *ops* (substitute (op n2 (substitute o2 o1 i2) o2)
-                                        op2 *ops*)))))))))
+  (tagbody
+    :start
+    (print *ops*)
+    (iter (for op1 in *ops*)
+          (ematch op1
+            ((op :name n1 :inputs i1 :output o1)
+             (let ((successors
+                    (iter (for op2 in *ops*)
+                          (when (and (member o1 (op-inputs op2))
+                                     (not (eq o1 (op-output op2)))
+                                     (not (member (op-output op2) (op-inputs op2))))
+                            (collect op2)))))
+               (match successors
+                 ((list (and op2 (op :name n2 :inputs i2 :output o2)))
+                  ;; only 1 op depends on op; share storage
+                  (print `(:removing ,o1))
+                  (setf *ops* (substitute (op n1 i1 o2) op1 *ops*))
+                  (setf *ops* (substitute (op n2 (substitute o2 o1 i2) o2)
+                                          op2 *ops*))
+                  (go :start))))))
+          (finally
+           (return-from reduce-allocation)))))
 
 (defun build-forms (result-symbol)
   (with-gensyms (len)
