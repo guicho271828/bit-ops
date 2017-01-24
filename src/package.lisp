@@ -89,10 +89,12 @@ into (bit-not subform <temporary storage>) .
 (defvar *register-allocation-optimization* t)
 (defvar *common-subexpression-elimination* t)
 (defvar *verbose* nil)
-(defstruct op
-  name
-  inputs
-  output)
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defstruct op
+    name
+    inputs
+    output))
 
 (declaim (inline op))
 (defun op (name inputs output)
