@@ -173,21 +173,21 @@ into (bit-not subform <temporary storage>) .
     ((list 'not arg)
      (accumulate (op 'bit-not (list (parse-form arg)) (gensym))))
     ((list (and binary-op
-                (or 'andc1 'andc2 'orc1 'orc2))
+                (or 'nand 'nor 'andc1 'andc2 'orc1 'orc2))
            arg1 arg2)
      (accumulate (op (symbolicate 'bit- binary-op)
                      (list (parse-form arg1)
                            (parse-form arg2)) (gensym))))
-    ((list (or 'and 'eqv 'ior 'nand 'nor 'xor) arg)
+    ((list (or 'and 'eqv 'ior 'xor) arg)
      (parse-form arg))
     ((list* (and commutative-op
-                 (or 'and 'eqv 'ior 'nand 'nor 'xor))
+                 (or 'and 'eqv 'ior 'xor))
             (list* (eq commutative-op) sub-args)
             args)
      ;; commutative fusion
      (parse-form `(,commutative-op ,@sub-args ,@args)))
     ((list* (and commutative-op
-                 (or 'and 'eqv 'ior 'nand 'nor 'xor))
+                 (or 'and 'eqv 'ior 'xor))
             arg args)
      (accumulate (op (symbolicate 'bit- commutative-op)
                      (list (parse-form arg)

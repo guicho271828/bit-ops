@@ -2,6 +2,19 @@
 (in-package :bit-ops)
 
 
+(define-bitwise-operation nand (&rest args)
+  "This is a commutative version of NAND,
+in contrast to 2-arg NAND compiled into primitive BIT-NAND.
+Take the conjunction of arguments and invert the results."
+  `(not (and ,@args)))
+
+(define-bitwise-operation nor (&rest args)
+  "This is a commutative version of NOR,
+in contrast to 2-arg NOR compiled into primitive BIT-NOR.
+Take the disjunction of arguments and invert the results."
+  `(not (and ,@args)))
+
+
 (define-bitwise-operation if (condition then else)
   `(ior (and ,condition ,then)
         (andc1 ,condition ,else)))
