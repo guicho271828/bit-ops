@@ -88,7 +88,7 @@ into (bit-not subform <temporary storage>) .
 
 (defvar *register-allocation-optimization* t)
 (defvar *common-subexpression-elimination* t)
-
+(defvar *verbose* nil)
 (defstruct op
   name
   inputs
@@ -114,7 +114,6 @@ into (bit-not subform <temporary storage>) .
 
 (defun reduce-allocation ()
   (iter (for op1 in *ops*)
-        (print *ops*)
         (ematch op1
           ((op :inputs (place i1) :output (place o1))
            (let ((successors
@@ -125,7 +124,8 @@ into (bit-not subform <temporary storage>) .
                ((list (op :inputs (place i2) :output (place o2 o2-orig)))
                 ;; only 1 op depends on op; share storage
                 (unless (member o2 i2) ; check if already reduced
-                  (print `(:removing ,o2))
+                  (when *verbose*
+                    (print `(:removing-tmp ,o2)))
                   (setf o2 o1)
                   (iter (for op3 in *ops*)
                         (ematch op3
@@ -160,7 +160,10 @@ into (bit-not subform <temporary storage>) .
   ;; subsequent call to the same expression should be rewritten.
   (if-let ((op2 (and *common-subexpression-elimination*
                      (find op *ops* :test #'common-subexpression))))
-    (op-output op2)
+    (progn
+      (when *verbose*
+        (print `(:removing-cse ,op)))
+      (op-output op2))
     (progn
       (push op *ops*)
       (op-output op))))
@@ -198,6 +201,8 @@ into (bit-not subform <temporary storage>) .
             (list* (eq commutative-op) sub-args)
             args)
      ;; commutative fusion
+     (when *verbose*
+       (print `(:fuse-commutative ,form)))
      (parse-form `(,commutative-op ,@sub-args ,@args)))
     ((list* (and commutative-op
                  (or 'and 'eqv 'ior 'xor))
