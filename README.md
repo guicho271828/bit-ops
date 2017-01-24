@@ -3,6 +3,14 @@
 
 [![Build Status](https://travis-ci.org/guicho271828/bit-ops.svg?branch=master)](https://travis-ci.org/guicho271828/bit-ops)
 
+Collection of optimized bit-vector routines.
+
+## Related work
+
+This library does not handle conversion to/from other types, such as positive integers or octet vectors. For that purpose, combine this library with [bit-smasher](https://github.com/thephoeron/bit-smasher) . However, note that bit-smasher's arithmetic is not always optimized and runs bitvec->integer->bitvec conversion.
+
+
+
 ## Usage
 
 ### Macro AS-BITWISE-OPERATIONS (&key result) &body body
