@@ -12,11 +12,8 @@ exec ros -Q -- $0 "$@"
                      (progn
                        (asdf:load-system :bit-ops.test)
                        (eval
- (read-from-string
-  "(let ((res (5am:run :bit-ops)))
-     (explain! res)
-     (every #'fiveam::TEST-PASSED-P res))"))
-)
+                        (read-from-string
+                         "(5am:run! :bit-ops)")))
                    (serious-condition (c)
                      (describe c)
                      (uiop:quit 2)))
