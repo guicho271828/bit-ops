@@ -48,6 +48,11 @@ Take the disjunction of arguments and invert the results."
 (as-bitwise-operations ()
   (full-adder-carry a b x))
 
+
+#+nil
+(as-bitwise-operations ()
+  (full-adder-carry (subseq a 25) b x))
+
 ;; multi-digit adder...
 
 ;; carry lookahead ...
