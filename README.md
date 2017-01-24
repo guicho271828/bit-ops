@@ -52,16 +52,22 @@ defining several SSE VOP operations.
 ### Macro AS-BITWISE-OPERATIONS (&key result) &body body
 
 Compute bitwise operations using bit vector arithmetic.
-`BODY` accepts a single form. Within `BODY`, one can access variables holding bit-vectors
-as arguments to bitwise operations, as well as constants 0 and 1, which maps to the bit 
-vector filled with 0 or 1, respectively.
+BODY accepts a single form. Within BODY, one can use variables holding bit-vectors as arguments to
+bitwise operations, as well as constants 0 and 1, which maps to the bit vector filled with
+0 or 1, respectively.
+All bit-vectors that are involved in bitwise operations should be of the same length.
 
-Primitive operators corresponds to ANSI CL functions: For example, `(not subform)` is compiled
-into `(bit-not subform <temporary storage>)` . Following operators are available:
+Primitive operators corresponds to ANSI CL functions: For example, (not subform) is compiled
+into (bit-not subform <temporary storage>) . Following primitive operators are available:
 
-    not and andc1 andc2 eqv ior nand nor orc1 orc2 xor
+  not and andc1 andc2 eqv ior nand nor orc1 orc2 xor
 
-The final computation result is stored in a newly allocated vector, or in `RESULT` if specified,
+Additionally, (SUBSEQ FORM OFFSET) operator evaluates FORM and
+extracts its window starting from OFFSET and of the length equal to the other variables.
+FORM is a regular lisp expression, not a bitwise operation, and the result may be different
+from the other bit-vectors.
+
+The final computation result is stored in a newly allocated vector, or in RESULT if specified,
 in spirit similar to the optional argument of Common Lisp bit-vector functions.
 The entire form returns the bit-vector which contains the result.
 
