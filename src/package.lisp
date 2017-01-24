@@ -78,10 +78,10 @@ into (bit-not subform <temporary storage>) .
                                  ~:@_~<  ~@;~a~:>~
                                  ~:@_Defined in ~a~
                                ~:>"
-                               (list args (list (first body)) *compile-file-pathname*))
+                               (list lambda-list (list (first body)) *compile-file-pathname*))
                        #+clisp
                        (format nil "Lambda-List: ~s~%~a"
-                               args (first body))))))))))
+                               lambda-list (first body))))))))))
 
 
 
