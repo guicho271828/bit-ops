@@ -10,18 +10,16 @@ Collection of optimized bit-vector routines.
 This section provides a review of related libraries, which I believe is important for
 alleviating choise paralysis.
 
-### BIT-SMASHER
+[BIT-SMASHER](http://quickdocs.org/bit-smasher/) provides functions for
+converting bit-vector to/from integers, octets and hex strings. BIT-OPS does not
+have such conversion functions. BIT-SMASHER also provides functions for
+arithmetic, such as addition, subtraction, shifting. However, note that those
+operations are not always optimized and runs bitvec->integer->bitvec conversion
+each time, with possibly consing.
 
-BIT-SMASHER provides functions for converting bit-vector to/from integers, octets and hex strings.
-BIT-OPS does not have such conversion functions.
-
-BIT-SMASHER also provides functions for arithmetic, such as addition, subtraction, shifting.
-However, note that those operations are not always optimized and runs bitvec->integer->bitvec conversion each time, with possibly consing.
-
-### BITFIELD-SCHEMA
-
-BITFIELD-SCHEMA provides several functions analogous to DPB and LPB for integers (GET/PUT-INTEGER).
-It also provides a DSL for writing accessors to BIT-VECTORS (ala union type in C).
+[BITFIELD-SCHEMA](http://quickdocs.org/bitfield-schema/) provides several
+functions analogous to DPB and LPB for integers (GET/PUT-INTEGER). It also
+provides a DSL for writing accessors to BIT-VECTORS (ala union type in C).
 
 Example from the doc: 
 ```lisp
@@ -32,20 +30,13 @@ Example from the doc:
   (right-child  :width 7))
 ```
 
-### BINARY-TYPES
-
-BINARY-TYPES provides DEFINE-BITFIELD and DEFINE-BINARY-CLASS
-whose role is similar to BITFIELD-SCHEMA,
-but is mainly targeted toward parsing machine integers, not bit-vectors.
-
-### TRIVIAL-BIT-STREAMS
-
-TRIVIAL-BIT-STREAMS provides a buffered stream of bits.
-
-### NIBBLES
-
-NIBBLES provides optimized access to octet vectors, especially on SBCL by
-defining several SSE VOP operations.
+[BINARY-TYPES](http://quickdocs.org/binary-types/) provides DEFINE-BITFIELD and
+DEFINE-BINARY-CLASS whose role is similar to BITFIELD-SCHEMA, but is mainly
+targeted toward parsing machine integers, not
+bit-vectors. [TRIVIAL-BIT-STREAMS](http://quickdocs.org/trivial-bit-streams/)
+provides a buffered stream of bits. [NIBBLES](http://quickdocs.org/nibbles/)
+provides optimized access to octet vectors, especially on SBCL by defining
+several SSE VOP operations.
 
 ## Usage
 
