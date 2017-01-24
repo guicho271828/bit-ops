@@ -7,9 +7,45 @@ Collection of optimized bit-vector routines.
 
 ## Related work
 
-This library does not handle conversion to/from other types, such as positive integers or octet vectors. For that purpose, combine this library with [bit-smasher](https://github.com/thephoeron/bit-smasher) . However, note that bit-smasher's arithmetic is not always optimized and runs bitvec->integer->bitvec conversion.
+This section provides a review of related libraries, which I believe is important for
+alleviating choise paralysis.
 
+### BIT-SMASHER
 
+BIT-SMASHER provides functions for converting bit-vector to/from integers, octets and hex strings.
+BIT-OPS does not have such conversion functions.
+
+BIT-SMASHER also provides functions for arithmetic, such as addition, subtraction, shifting.
+However, note that those operations are not always optimized and runs bitvec->integer->bitvec conversion each time, with possibly consing.
+
+### BITFIELD-SCHEMA
+
+BITFIELD-SCHEMA provides several functions analogous to DPB and LPB for integers (GET/PUT-INTEGER).
+It also provides a DSL for writing accessors to BIT-VECTORS (ala union type in C).
+
+Example from the doc: 
+```lisp
+(defbitfield-schema tree-node (:offset offt)
+  (disabled-p   :width 1)
+  (values       :width 16 :count 10)
+  (left-child   :width 24)
+  (right-child  :width 7))
+```
+
+### BINARY-TYPES
+
+BINARY-TYPES provides DEFINE-BITFIELD and DEFINE-BINARY-CLASS
+whose role is similar to BITFIELD-SCHEMA,
+but is mainly targeted toward parsing machine integers, not bit-vectors.
+
+### TRIVIAL-BIT-STREAMS
+
+TRIVIAL-BIT-STREAMS provides a buffered stream of bits.
+
+### NIBBLES
+
+NIBBLES provides optimized access to octet vectors, especially on SBCL by
+defining several SSE VOP operations.
 
 ## Usage
 
