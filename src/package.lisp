@@ -165,6 +165,15 @@ into (bit-not subform <temporary storage>) .
       (push op *ops*)
       (op-output op))))
 
+(declaim (inline bit-replace))
+(defun bit-replace (source offset destination)
+  "Wrapper for REPLACE which follows the syntax of bit-* (The last arg is the destination)."
+  ;; Assumes DESTINATION is a temporary place defined by the compiler.
+  ;; Thus no need to check end2: if SOURCE is longer,
+  ;; the result is truncated to the size of DESTINATION.
+  ;; If SOURCE is shorter, only the range within source is copied.
+  (replace destination source :start2 offset))
+
 (defun parse-form (form)
   (ematch form
     (0 '+zero+)
@@ -173,6 +182,9 @@ into (bit-not subform <temporary storage>) .
      (setf *first-variable* form))
     ((list 'not arg)
      (accumulate (op 'bit-not (list (parse-form arg)) (gensym))))
+    ((or (and (list 'subseq arg) (<> offset 0))
+         (list 'subseq arg offset))
+     (accumulate (op 'bit-replace (list arg offset) (gensym))))
     ((list (and binary-op
                 (or 'nand 'nor 'andc1 'andc2 'orc1 'orc2))
            arg1 arg2)
