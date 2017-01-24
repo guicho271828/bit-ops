@@ -101,14 +101,16 @@ into (bit-not subform <temporary storage>) .
 (defvar *ops* nil)
 (defvar *first-variable* nil)
 (defvar *result-variable* nil)
+(defvar *length-variable* nil)
 (defun compile-bitwise-operations (form result)
   (let ((*ops* nil)
         (*first-variable* nil))
-    (let ((*result-variable* (parse-form form)))
-      (setf *ops* (nreverse *ops*))     ;in order
-      (when *register-allocation-optimization*
-        (reduce-allocation))
-      (build-forms result))))
+    (with-gensyms (*length-variable*)
+      (let ((*result-variable* (parse-form form)))
+        (setf *ops* (nreverse *ops*))     ;in order
+        (when *register-allocation-optimization*
+          (reduce-allocation))
+        (build-forms result)))))
 
 (defun reduce-allocation ()
   (iter (for op1 in *ops*)
@@ -133,21 +135,20 @@ into (bit-not subform <temporary storage>) .
                     (setf *result-variable* o1))))))))))
 
 (defun build-forms (result)
-  (with-gensyms (len)
-    `(let* ((,len (length ,*first-variable*))
-            (,*result-variable* ,(or result `(make-bit-vector ,len))))
-       (dlet* ((+zero+ (make-zero ,len))
-               (+one+  (make-one  ,len))
-               ,@(mapcar (lambda (out)
-                           `(,out (make-bit-vector ,len)))
-                         (remove-duplicates
-                          (remove *result-variable*
-                                  (mapcar #'op-output *ops*)))))
-         (declare (ignorable +zero+ +one+))
-         ,@(mapcar (lambda-ematch
-                     ((op name inputs output)
-                      `(,name ,@inputs ,output))) *ops*)
-         ,*result-variable*))))
+  `(let* ((,*length-variable* (length ,*first-variable*))
+          (,*result-variable* ,(or result `(make-bit-vector ,*length-variable*))))
+     (dlet* ((+zero+ (make-zero ,*length-variable*))
+             (+one+  (make-one  ,*length-variable*))
+             ,@(mapcar (lambda (out)
+                         `(,out (make-bit-vector ,*length-variable*)))
+                       (remove-duplicates
+                        (remove *result-variable*
+                                (mapcar #'op-output *ops*)))))
+       (declare (ignorable +zero+ +one+))
+       ,@(mapcar (lambda-ematch
+                   ((op name inputs output)
+                    `(,name ,@inputs ,output))) *ops*)
+       ,*result-variable*)))
 
 (defun-match* common-subexpression (op1 op2)
   (((op name inputs)
