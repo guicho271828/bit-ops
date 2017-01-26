@@ -113,6 +113,7 @@ The compiler does various optimizations:
 This library is at least tested on implementation listed below:
 
 + SBCL 1.3.13 on X86-64 Linux 4.4.0-59-generic (author's environment)
++ CCL 1.11 X86-64 Linux 4.4.0-59-generic (author's environment)
 
 Also, it depends on the following libraries:
 
