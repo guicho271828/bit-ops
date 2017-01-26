@@ -1,9 +1,8 @@
 
-# Bit-Ops - Optimized bit-vector operations
+# Bit-Ops - Tools for Writing Optimized Bit-Vector Operations
 
 [![Build Status](https://travis-ci.org/guicho271828/bit-ops.svg?branch=master)](https://travis-ci.org/guicho271828/bit-ops)
 
-Collection of optimized bit-vector routines.
 
 ## Related work
 
