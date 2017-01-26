@@ -18,7 +18,7 @@ each time, with possibly consing.
 
 [BITFIELD-SCHEMA](http://quickdocs.org/bitfield-schema/) provides several
 functions analogous to DPB and LPB for integers (GET/PUT-INTEGER). It also
-provides a DSL for writing accessors to BIT-VECTORS (ala union type in C).
+provides a DSL for writing accessors to bit-vectors (ala union type in C).
 
 Example from the doc: 
 ```lisp
@@ -29,10 +29,10 @@ Example from the doc:
   (right-child  :width 7))
 ```
 
-[BINARY-TYPES](http://quickdocs.org/binary-types/) provides DEFINE-BITFIELD and
-DEFINE-BINARY-CLASS whose role is similar to BITFIELD-SCHEMA, but is mainly
-targeted toward parsing machine integers, not
-bit-vectors. [TRIVIAL-BIT-STREAMS](http://quickdocs.org/trivial-bit-streams/)
+[BINARY-TYPES](http://quickdocs.org/binary-types/) provides `DEFINE-BITFIELD` and
+`DEFINE-BINARY-CLASS` whose role is similar to `BITFIELD-SCHEMA`, but is for 
+parsing machine integers, not bit-vectors.
+[TRIVIAL-BIT-STREAMS](http://quickdocs.org/trivial-bit-streams/)
 provides a buffered stream of bits. [NIBBLES](http://quickdocs.org/nibbles/)
 provides optimized access to octet vectors, especially on SBCL by defining
 several SSE VOP operations.
@@ -42,22 +42,23 @@ several SSE VOP operations.
 ### Macro AS-BITWISE-OPERATIONS (&key result) &body body
 
 Compute bitwise operations using bit vector arithmetic.
-BODY accepts a single form. Within BODY, one can use variables holding bit-vectors as arguments to
+`BODY` accepts a single form.
+Within `BODY`, one can use variables holding bit-vectors as arguments to
 bitwise operations, as well as constants 0 and 1, which maps to the bit vector filled with
 0 or 1, respectively.
 All bit-vectors that are involved in bitwise operations should be of the same length.
 
-Primitive operators corresponds to ANSI CL functions: For example, (not subform) is compiled
-into (bit-not subform <temporary storage>) . Following primitive operators are available:
+Primitive operators corresponds to ANSI CL functions: For example, `(not subform)` is compiled
+into `(bit-not subform <temporary storage>)` . Following primitive operators are available:
 
-  not and andc1 andc2 eqv ior nand nor orc1 orc2 xor
+    not and andc1 andc2 eqv ior nand nor orc1 orc2 xor
 
-Additionally, (SUBSEQ FORM OFFSET) operator evaluates FORM and
+Additionally, `(SUBSEQ FORM OFFSET)` operator evaluates FORM and
 extracts its window starting from OFFSET and of the length equal to the other variables.
 FORM is a regular lisp expression, not a bitwise operation, and the result may be different
 from the other bit-vectors.
 
-The final computation result is stored in a newly allocated vector, or in RESULT if specified,
+The final computation result is stored in a newly allocated vector, or in `RESULT` if specified,
 in spirit similar to the optional argument of Common Lisp bit-vector functions.
 The entire form returns the bit-vector which contains the result.
 
@@ -66,7 +67,7 @@ The compiler does various optimizations:
 * Nested expressions store the results into dynamic-extent temporary vectors.
 * Common subexpressions are eliminated.
 * The number of temporary vectors are minimized/shared in spirit similar to register allocation.
-* Macros for bitwise operations can be defined with DEFINE-BITWISE-OPERATION.
+* Macros for bitwise operations can be defined with `DEFINE-BITWISE-OPERATION`.
 
 
 ```lisp
