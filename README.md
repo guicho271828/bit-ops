@@ -3,6 +3,13 @@
 
 [![Build Status](https://travis-ci.org/guicho271828/bit-ops.svg?branch=master)](https://travis-ci.org/guicho271828/bit-ops)
 
+In the modern Common Lisp implementations, bit-vector operation functions such as `bit-and` are compiled into word-size iterations where 32 or 64 bits are processed at once. However, it requires a careful handling when multiple operations are combined, e.g. for avoiding the generation of intermediate vectors by destructively modifying the existing vectors. For example, 
+
+```lisp
+(bit-and a (bit-and b c))
+```
+
+causes consing since the intermediate value `(bit-and b c)` is generated on the heap. This library addresses this problem as well as the scarsity of useful bit-vector functions in ANSI CL.
 
 ## Related work
 
