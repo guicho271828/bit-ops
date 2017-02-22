@@ -1,4 +1,3 @@
-
 (in-package :bit-ops)
 
 
@@ -52,6 +51,12 @@ Take the disjunction of arguments and invert the results."
 #+nil
 (as-bitwise-operations ()
   (full-adder-carry (subseq a 25) b x))
+
+;; (define-bitwise-operation adder (a b prefetch)
+;;   "Perform full addition of a and b. The end carry bit is ignored.
+;; PREFETCH specifies how many intermediate carry out bits to prefetch.
+;; "
+
 
 ;; multi-digit adder...
 

@@ -15,7 +15,13 @@
    #:implies
    #:bitwise-operation
    #:define-bitwise-operation
-   #:as-bitwise-operations)
+   #:as-bitwise-operations
+   #:nand
+   #:nor
+   #:half-adder-sum
+   #:half-adder-carry
+   #:full-adder-sum
+   #:full-adder-carry)
   (:shadowing-import-from :immutable-struct :ftype))
 (in-package :bit-ops)
 
@@ -71,7 +77,7 @@ into (bit-not subform <temporary storage>) .
         ,@(when doc
             ;; this code is borrowed from trivia
             ;; lisp-namespace
-            `((setf (documentation ',name 'pattern)
+            `((setf (documentation ',name 'bitwise-operation)
                     ,(let ((*print-pretty* t))
                        #-clisp
                        (format nil "~<Lambda-List: ~s~
